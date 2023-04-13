@@ -1,52 +1,58 @@
+import { ConvertingContextType } from "@/context/ConvertingContext";
 import { DataContentContextType } from "@/context/DataContext";
 import axios from "axios";
-import { Dispatch, SetStateAction } from "react";
 import io from "socket.io-client";
 
 type PropsType = {
 	contextData: DataContentContextType;
-	setLoading: Dispatch<SetStateAction<boolean>>;
+	convertingData: ConvertingContextType
 };
 
-export const services = {
-	startService: async (props: PropsType) => {
-		const { contextData, setLoading } = props;
-		try {
-			console.log("axios", contextData);
+export const startService = async (props: PropsType) => {
+	try {
+		await axios.post("http://localhost:3000/api/io/").then(() => {
+			socketService(props);
+		});
+	} catch (error) {
+		console.log("ERROR: fetchData", error);
+	}
+};
 
-			await axios.post("http://localhost:3000/api/io/").then(() => {
-				const socket = io("http://localhost:3000");
+const socketService = (props: PropsType) => {
+	const { contextData, convertingData } = props;
+	const socket = io("http://localhost:3000");
 
-				socket.on("connect", () => {
-					console.log("Conectado ao servidor Socket.IO");
-				});
+	socket.on("connect", () => {
+		console.log("Conectado ao servidor Socket.IO");
+	});
 
-				socket.emit("start_url", {
-					url: contextData.url,
-					bitrate: 192,
-				});
+	socket.emit("start_url", {
+		url: contextData.url,
+		bitrate: 192,
+	});
 
-				socket.on("loading_audio", (bool) => setLoading(bool));
+	socket.on("send_info", (data) => {
+		console.log(data.videoDetails.title);
+		
+		convertingData.videoName = data.videoDetails.title
+	});
 
-				socket.on("buffer", (buffers, fileName) => {
-					const buffer = Buffer.from(buffers);
-					services.createDownloadableObject(buffer, fileName);
-				});
-			});
-		} catch (error) {
-			console.log("ERROR: fetchData", error);
-		}
-	},
+	socket.on("loading_audio", (bool) => convertingData.loading = bool);
 
-	createDownloadableObject: (buffer: Buffer, fileName: string) => {
-		const blob = new Blob([buffer], { type: "audio/mp3" });
-		const url = URL.createObjectURL(blob);
-		const link = document.createElement("a");
-		link.href = url;
-		link.download = fileName;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-		URL.revokeObjectURL(url);
-	},
+	socket.on("buffer", (buffers, fileName) => {
+		const buffer = Buffer.from(buffers);
+		createDownloadableObject(buffer, fileName);
+	});
+};
+
+const createDownloadableObject = (buffer: Buffer, fileName: string) => {
+	const blob = new Blob([buffer], { type: "audio/mp3" });
+	const url = URL.createObjectURL(blob);
+	const link = document.createElement("a");
+	link.href = url;
+	link.download = fileName;
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+	URL.revokeObjectURL(url);
 };

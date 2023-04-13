@@ -6,28 +6,24 @@ import {
 	StartServiceFunctionContext,
 	StartServiceFunctionType,
 } from "../context/StartServiceFunctionContext";
+import { ConvertingContext, ConvertingContextType } from "../context/ConvertingContext";
 
-import { services } from "../services/services";
+import { startService } from "../services/services";
 
-const startServiceResquest = (
-	contextData: DataContentContextType,
-	setLoading: Dispatch<SetStateAction<boolean>>
-) => {
-	services.startService({ contextData, setLoading });
+const startServiceResquest = (contextData: DataContentContextType, convertingData: ConvertingContextType) => {
+	startService({ contextData, convertingData });
 };
 
 export default function Home() {
 	const [loading, setLoading] = useState(false);
 	const contextData = useContext<DataContentContextType>(DataContext);
-
-	const StartService = useContext<StartServiceFunctionType>(
+	const startService = useContext<StartServiceFunctionType>(
 		StartServiceFunctionContext
 	);
+	const convertingData = useContext(ConvertingContext);
 
-	StartService.cb = function () {
-		console.log("cb", contextData);
-
-		startServiceResquest(contextData, setLoading);
+	startService.cb = function () {
+		startServiceResquest(contextData, convertingData);
 	};
 
 	return (
