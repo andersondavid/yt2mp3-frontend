@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
-import { ContextGlobal, MyContextType } from "../context/Context";
+import { DataContext, DataContextType } from "../context/DataContext";
 
 export default function QualitySelect() {
 	const { contextData, setContextData } =
-		useContext<MyContextType>(ContextGlobal);
+		useContext<DataContextType>(DataContext);
 
 	const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const optionSelect = event.target.value;
