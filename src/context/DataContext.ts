@@ -15,4 +15,4 @@ export type DataContextType = {
 	>;
 };
 
-export const DataContext = createContext({} as DataContextType);
+export const DataContext = createContext({} as DataContentContextType);

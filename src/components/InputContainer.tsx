@@ -1,20 +1,18 @@
 import React, { useState, useContext, useRef } from "react";
-import { DataContext, DataContextType } from "../context/DataContext";
+import { DataContext, DataContentContextType } from "../context/DataContext";
 import { StartServiceFunctionContext } from "../context/StartServiceFunctionContext";
 
 export default function InputContainer() {
 	const [animClick, setAnimClick] = useState("border-b-4");
 	const urlInput = useRef<HTMLInputElement>(null);
 
-	const { contextData, setContextData } =
-		useContext<DataContextType>(DataContext);
+	const contextData = useContext<DataContentContextType>(DataContext);
 	const startService = useContext(StartServiceFunctionContext);
 	const clickHandle = () => {
 		setAnimClick("mt-[2px]");
 		setTimeout(() => setAnimClick("border-b-4"), 200);
 		const url = urlInput.current?.value || "";
-
-		setContextData({ ...contextData, url });
+		contextData.url = url;
 		startService.cb();
 		console.log("input", contextData);
 	};

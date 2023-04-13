@@ -3,23 +3,20 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 
 import { DataContext } from "../context/DataContext";
-import {
-	StartServiceFunctionContext,
-	StartServiceFunctionType,
-} from "../context/StartServiceFunctionContext";
+import { StartServiceFunctionContext } from "../context/StartServiceFunctionContext";
 
 export default function App({ Component, pageProps }: AppProps) {
-	const [contextData, setContextData] = useState({
+	const contextData = {
 		url: "",
 		quality: "",
-	});
+	};
 
-	const startService: StartServiceFunctionType = {
+	const startService = {
 		cb: () => {},
 	};
 
 	return (
-		<DataContext.Provider value={{ contextData, setContextData }}>
+		<DataContext.Provider value={contextData}>
 			<StartServiceFunctionContext.Provider value={startService}>
 				<Component {...pageProps} />
 			</StartServiceFunctionContext.Provider>

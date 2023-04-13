@@ -10,12 +10,11 @@ type PropsType = {
 
 export const services = {
 	startService: async (props: PropsType) => {
-		
 		const { contextData, setLoading } = props;
 		try {
-			console.log('axios', contextData);
-			
-			/*await axios.post("http://localhost:3000/api/io/").then(() => {
+			console.log("axios", contextData);
+
+			await axios.post("http://localhost:3000/api/io/").then(() => {
 				const socket = io("http://localhost:3000");
 
 				socket.on("connect", () => {
@@ -33,9 +32,7 @@ export const services = {
 					const buffer = Buffer.from(buffers);
 					services.createDownloadableObject(buffer, fileName);
 				});
-
-				
-			});*/
+			});
 		} catch (error) {
 			console.log("ERROR: fetchData", error);
 		}
