@@ -5,7 +5,7 @@ type ActionType = {
 
 export const initialState = {
 	url: "",
-	quality: "",
+	quality: "good",
 };
 
 export function reducer(state = initialState, action: ActionType) {
