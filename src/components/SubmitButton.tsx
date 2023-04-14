@@ -1,12 +1,12 @@
 import React, { useState, useContext, useRef } from "react";
 
-export default function SubmitButton() {
+export default function SubmitButton({ submit }) {
 	const [animClick, setAnimClick] = useState("border-b-4");
 	const clickHandle = () => {
 		setAnimClick("mt-[2px]");
 		setTimeout(() => setAnimClick("border-b-4"), 200);
 
-		//startService.cb();
+		submit()
 	};
 	return (
 		<div className="flex justify-center">

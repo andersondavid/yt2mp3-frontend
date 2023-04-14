@@ -1,12 +1,22 @@
-import React, { useContext } from "react";
-import { DataContext, DataContentContextType } from "../context/DataContext";
+import React from "react";
 
-export default function QualitySelect() {
-	const contextData = useContext<DataContentContextType>(DataContext);
+type PropTypes = {
+	reducerDispatch: React.Dispatch<ActionType>;
+	reducerValue: { url: string };
+};
 
+type ActionType = { type: "UPDATE_QUALITY"; payload: string };
+
+export default function QualitySelect({
+	reducerDispatch,
+	reducerValue,
+}: PropTypes) {
 	const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const optionSelect = event.target.value;
-		contextData.quality = optionSelect;
+		reducerDispatch({
+			type: "UPDATE_QUALITY",
+			payload: optionSelect,
+		});
 	};
 
 	return (
