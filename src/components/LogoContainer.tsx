@@ -1,15 +1,10 @@
-import React, { useContext, useEffect } from "react";
-import { ConvertingContext } from "../context/ConvertingContext";
+import React from "react";
+import Image from "next/image";
 
 export default function LogoContainer() {
-	const convertingData = useContext(ConvertingContext);
-	useEffect(() => {
-		console.log(convertingData);
-	}, [convertingData]);
 	return (
-		<div className="text-center pb-4">
-			<h2 className="font-bold text-2xl">Minha Logo</h2>
-			{convertingData.videoName && <p>convertingData.videoName</p>}
+		<div className="text-center pb-4 relative h-16">
+			<Image src={'/logo.svg'} alt="logo image" fill />
 		</div>
 	);
 }
