@@ -2,7 +2,7 @@ import React from "react";
 
 type PropTypes = {
 	reducerDispatch: React.Dispatch<ActionType>;
-	reducerValue: { url: string };
+	reducerValue: { quality: string };
 };
 
 type ActionType = { type: "UPDATE_QUALITY"; payload: string };
@@ -28,6 +28,7 @@ export default function QualitySelect({
 						type="radio"
 						name="quality"
 						value="regular"
+						checked={reducerValue.quality == "regular"}
 						onChange={handleRadioChange}
 						className="before:content-[''] checked:before:block before:h-[16px] before:w-[16px] before:rounded-full before:m-[-2px] before:bg-green-500 mr-2 border-black border-2 focus:ring-0 focus:ring-transparent"
 					/>
@@ -38,6 +39,7 @@ export default function QualitySelect({
 						type="radio"
 						name="quality"
 						value="good"
+						checked={reducerValue.quality == "good"}
 						onChange={handleRadioChange}
 						className="before:content-[''] checked:before:block before:h-[16px] before:w-[16px] before:rounded-full before:m-[-2px] before:bg-green-500 mr-2 border-black border-2 focus:ring-0 focus:ring-transparent"
 					/>
@@ -48,6 +50,7 @@ export default function QualitySelect({
 						type="radio"
 						name="quality"
 						value="great"
+						checked={reducerValue.quality == "great"}
 						onChange={handleRadioChange}
 						className="before:content-[''] checked:before:block before:h-[16px] before:w-[16px] before:rounded-full before:m-[-2px] before:bg-green-500 mr-2 border-black border-2 focus:ring-0 focus:ring-transparent"
 					/>
