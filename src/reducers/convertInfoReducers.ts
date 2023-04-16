@@ -1,6 +1,6 @@
 type ActionType = {
 	type: string;
-	payload: string;
+	payload: string
 };
 
 export const initialState = {
