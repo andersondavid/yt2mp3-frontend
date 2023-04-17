@@ -13,9 +13,18 @@ export interface DataForConvertQualityType {
 	quality: string;
 }
 
+type AppStatusType =
+	| "WAIT_CONNECTION"
+	| "STANDBY"
+	| "CONVERTING"
+	| "FINISHED"
+	| "ERROR";
+
 type SetStatesType = {
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 	setVideoTitle: React.Dispatch<React.SetStateAction<string>>;
+	setAppStatus: React.Dispatch<React.SetStateAction<AppStatusType>>;
+	setFileName: React.Dispatch<React.SetStateAction<string>>;
 };
 interface DataForConvertBitrateType {
 	url: string;
@@ -68,6 +77,8 @@ const socketService = (dataForConvert: DataForConvertBitrateType, setStates: Set
 	});
 
 	socket.on("buffer", (buffers, fileName) => {
+		setStates.setAppStatus("FINISHED")
+		setStates.setFileName(fileName)
 		const buffer = Buffer.from(buffers);
 		createDownloadableObject(buffer, fileName);
 	});
@@ -120,7 +131,9 @@ export const runServices = async (
 	const initialResquestResult: InitialResquestResultType =
 		await initialRequestService();
 	const resquestStatus = initialResquestResult.data.status;
+
 	if (resquestStatus == REQUEST_STATUS_OK) {
+		setStates.setAppStatus("CONVERTING")
 		socketService(dataForConvertBitrate, setStates);
 	}
 };

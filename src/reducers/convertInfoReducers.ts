@@ -1,7 +1,9 @@
 type ActionType = {
 	type: string;
-	payload: string
+	payload: string;
 };
+
+//type AppStatusType = "STANDBY" | "CONVERTING" | "FINISHED" | "OFFLINE"
 
 export const initialState = {
 	url: "",
@@ -14,6 +16,8 @@ export function reducer(state = initialState, action: ActionType) {
 			return { ...state, url: action.payload };
 		case "UPDATE_QUALITY":
 			return { ...state, quality: action.payload };
+		case "RESET_APP":
+			return {...state, url: "" }
 		default:
 			return state;
 	}

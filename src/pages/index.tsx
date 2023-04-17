@@ -5,10 +5,17 @@ import LogoContainer from "@/components/LogoContainer";
 import AboutContainer from "@/components/AboutContainer";
 import SubmitButton from "@/components/SubmitButton";
 import VideoTitle from "@/components/VideoTitle";
+import DownloadFinish from "@/components/DownloadFinish";
 
 import { reducer, initialState } from "@/reducers/convertInfoReducers";
-
 import { runServices } from "@/services/services";
+
+type AppStatusType =
+	| "WAIT_CONNECTION"
+	| "STANDBY"
+	| "CONVERTING"
+	| "FINISHED"
+	| "ERROR";
 
 export default function Home() {
 	const [convertInfoState, convertInfoDispatch] = useReducer(
@@ -17,10 +24,25 @@ export default function Home() {
 	);
 
 	const [loading, setLoading] = useState(false);
-	const [videoTitle, setVideoTitle] = useState("");
+	const [videoTitle, setVideoTitle] = useState<string>("");
+	const [appStatus, setAppStatus] = useState<AppStatusType>("WAIT_CONNECTION");
+	const [fileName, setFileName] = useState("");
 
 	const handleConvertInfo = () => {
-		runServices(convertInfoState, { setLoading, setVideoTitle });
+		runServices(convertInfoState, {
+			setLoading,
+			setAppStatus,
+			setVideoTitle,
+			setFileName,
+		});
+	};
+
+	const resetApp = () => {
+		convertInfoDispatch({
+			type: "RESET_APP",
+			payload: "",
+		});
+		setVideoTitle("");
 	};
 
 	return (
@@ -41,6 +63,14 @@ export default function Home() {
 				/>
 				<AboutContainer />
 			</div>
+			{!loading && appStatus === "FINISHED" && (
+				<DownloadFinish
+					setAppStatus={setAppStatus}
+					resetApp={resetApp}
+					title="Download Concluido!"
+					message={fileName}
+				/>
+			)}
 		</div>
 	);
 }
