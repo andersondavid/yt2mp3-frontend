@@ -21,8 +21,6 @@ const titleAnimation: TitleAnimType = (propTitle, setAnim, setTitle) => {
 		setTitle(titleAnimationString);
 		i++;
 
-		console.log(titleAnimationString);
-
 		if (i >= titleArray.length) {
 			clearInterval(intervalId);
 		}
@@ -37,9 +35,8 @@ export default function VideoTitle(props: PropType) {
 
 	useEffect(() => {
 		if (propTitle) {
-			let shotPropTitle = propTitle.substring(0, 20)
+			let shotPropTitle = propTitle.substring(0, 40)
 			titleAnimation(shotPropTitle, setAnim, setTitle);
-			console.log("im captan jack sparrow");
 		}
 	}, [propTitle]);
 

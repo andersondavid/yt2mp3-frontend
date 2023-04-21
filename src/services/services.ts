@@ -1,3 +1,4 @@
+import createFileName from "@/utils/createFileName";
 import axios, { AxiosResponse } from "axios";
 import React from "react";
 import io from "socket.io-client";
@@ -26,6 +27,11 @@ type SetStatesType = {
 	setAppStatus: React.Dispatch<React.SetStateAction<AppStatusType>>;
 	setFileName: React.Dispatch<React.SetStateAction<string>>;
 };
+
+type States = {
+	videoTitle: string;
+};
+
 interface DataForConvertBitrateType {
 	url: string;
 	bitrate: number;
@@ -42,7 +48,7 @@ const initialRequestService = async (): Promise<
 > => {
 	try {
 		const result = await axios.get<ResquestStatus>(
-			"http://localhost:3000/api/io/"
+			"http://localhost:3000/api/io"
 		);
 		console.log("request");
 		return result;
@@ -53,9 +59,15 @@ const initialRequestService = async (): Promise<
 	}
 };
 
-const socketService = (dataForConvert: DataForConvertBitrateType, setStates: SetStatesType) => {
+const socketService = (
+	dataForConvert: DataForConvertBitrateType,
+	state: States,
+	setStates: SetStatesType
+) => {
 	const { url, bitrate } = dataForConvert;
 	const socket = io("http://localhost:3000");
+	console.log(state);
+	
 
 	socket.on("connect", () => {
 		console.log("Conectado ao servidor Socket.IO");
@@ -68,23 +80,29 @@ const socketService = (dataForConvert: DataForConvertBitrateType, setStates: Set
 
 	socket.on("send_info", (data) => {
 		console.log("send_info", data);
-		setStates.setVideoTitle(data.videoDetails.title)
+		setStates.setVideoTitle(data.videoDetails.title);
 	});
 
 	socket.on("loading_audio", (bool) => {
 		console.log("loading_audio", bool);
-		setStates.setLoading(bool)
+		setStates.setLoading(bool);
 	});
 
-	socket.on("buffer", (buffers, fileName) => {
-		setStates.setAppStatus("FINISHED")
-		setStates.setFileName(fileName)
+	socket.on("buffer", (buffers) => {
+		setStates.setAppStatus("FINISHED");
+		const fileName = createFileName(state.videoTitle);
+		console.log(state.videoTitle, fileName);
+		
+		setStates.setFileName(fileName);
+
 		const buffer = Buffer.from(buffers);
 		createDownloadableObject(buffer, fileName);
 	});
 };
 
 const createDownloadableObject = (buffer: Buffer, fileName: string) => {
+	console.log('filename', fileName);
+	
 	const blob = new Blob([buffer], { type: "audio/mp3" });
 	const url = URL.createObjectURL(blob);
 	const link = document.createElement("a");
@@ -98,14 +116,9 @@ const createDownloadableObject = (buffer: Buffer, fileName: string) => {
 
 export const runServices = async (
 	dataForConvert: DataForConvertQualityType,
-	setStates: SetStatesType
+	setStates: SetStatesType,
+	states: States
 ) => {
-	// const qualityBitrate = {
-	// 	regular: 128,
-	// 	good: 192,
-	// 	great: 256,
-	// };
-
 	let qualityBitrate: number;
 	switch (dataForConvert.quality) {
 		case "regular":
@@ -127,13 +140,14 @@ export const runServices = async (
 		url: dataForConvert.url,
 		bitrate: qualityBitrate,
 	};
+	socketService(dataForConvertBitrate, states, setStates);
 
-	const initialResquestResult: InitialResquestResultType =
-		await initialRequestService();
-	const resquestStatus = initialResquestResult.data.status;
+	// const initialResquestResult: InitialResquestResultType =
+	// 	await initialRequestService();
+	// const resquestStatus = initialResquestResult.data.status;
 
-	if (resquestStatus == REQUEST_STATUS_OK) {
-		setStates.setAppStatus("CONVERTING")
-		socketService(dataForConvertBitrate, setStates);
-	}
+	// if (resquestStatus == REQUEST_STATUS_OK) {
+	// 	setStates.setAppStatus("CONVERTING");
+	// 	socketService(dataForConvertBitrate, setStates);
+	// }
 };
