@@ -3,6 +3,8 @@ import axios, { AxiosResponse } from "axios";
 import React from "react";
 import io from "socket.io-client";
 
+const HOST = "https://late-resonance-3986.fly.dev/";
+//const HOST = 'http://localhost:3000/'
 const REQUEST_STATUS_OK = "REQUEST_STATUS_OK";
 interface ResquestStatus {
 	status: string;
@@ -37,18 +39,13 @@ interface DataForConvertBitrateType {
 	bitrate: number;
 }
 
-type InitialResquestResultType = AxiosResponse<{
-	status: string;
-}>;
-
-const listMusics: Array<DataForConvertQualityType> = [];
 
 const initialRequestService = async (): Promise<
 	AxiosResponse<ResquestStatus>
 > => {
 	try {
 		const result = await axios.get<ResquestStatus>(
-			"http://localhost:3000/api/io"
+			`${HOST}api/io`
 		);
 		console.log("request");
 		return result;
@@ -65,10 +62,8 @@ const socketService = (
 	setStates: SetStatesType
 ) => {
 	const { url, bitrate } = dataForConvert;
-	const socket = io("http://localhost:3000");
-	console.log(state);
-	
-
+	const socket = io(`${HOST}`);
+	let VIDEO_TITLE: string
 	socket.on("connect", () => {
 		console.log("Conectado ao servidor Socket.IO");
 	});
@@ -79,7 +74,9 @@ const socketService = (
 	});
 
 	socket.on("send_info", (data) => {
-		console.log("send_info", data);
+		console.log('Titulo do Video', data.videoDetails.title);
+		
+		VIDEO_TITLE = data.videoDetails.title
 		setStates.setVideoTitle(data.videoDetails.title);
 	});
 
@@ -90,9 +87,9 @@ const socketService = (
 
 	socket.on("buffer", (buffers) => {
 		setStates.setAppStatus("FINISHED");
-		const fileName = createFileName(state.videoTitle);
-		console.log(state.videoTitle, fileName);
-		
+		const fileName = createFileName(VIDEO_TITLE);
+		console.log('Nome do arquivo', fileName);
+
 		setStates.setFileName(fileName);
 
 		const buffer = Buffer.from(buffers);
@@ -101,8 +98,8 @@ const socketService = (
 };
 
 const createDownloadableObject = (buffer: Buffer, fileName: string) => {
-	console.log('filename', fileName);
-	
+	console.log("filename", fileName);
+
 	const blob = new Blob([buffer], { type: "audio/mp3" });
 	const url = URL.createObjectURL(blob);
 	const link = document.createElement("a");
